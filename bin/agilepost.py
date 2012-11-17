@@ -3,6 +3,7 @@
 from AgileCLU import AgileCLU
 from optparse import OptionParser, OptionGroup
 import sys, os.path, urllib, subprocess, time
+import gzip
 
 from poster.encode import multipart_encode, get_body_size
 from poster.streaminghttp import register_openers
@@ -24,6 +25,7 @@ def main(*arg):
 	group.add_option("-e", "--egress", dest="egress", help="set egress policy (PARTIAL, COMPLETE or POLICY)", default="COMPLETE")
 	group.add_option("-m", "--mkdir", action="store_true", help="create destination path, if it does not exist")
 	group.add_option("-p", "--progress", action="store_true", help="show transfer progress bar")
+	group.add_option("-z", "--zip", action="store_true", help="compress file before uploading.  Store encrypted")
 	parser.add_option_group(group)
 	
 	config = OptionGroup(parser, "Configuration Option")
@@ -48,6 +50,14 @@ def main(*arg):
 
 	localpath = os.path.dirname(object)
 	localfile = os.path.basename(object)
+	if( options.zip ):
+		if options.verbose: print "Compressing %s" % (localfile)
+		f_in = open(os.path.join(localpath,localfile), 'rb')
+		localfile += ".gz"
+		f_out = gzip.open(os.path.join(localpath,localfile), 'wb')
+		f_out.writelines(f_in)
+		f_out.close()
+		f_in.close()
 
 	# check that destination path exists
 	if (not agile.exists(path)):
@@ -82,6 +92,9 @@ def main(*arg):
 	if options.verbose: print "%s%s" % (agile.mapperurlstr(),urllib.quote(os.path.join(path,fname)))
 
 	agile.logout()
+	if( options.zip ):
+		if options.verbose: print "Clearing cached zip file"
+		os.remove(os.path.join(localpath,localfile))
 
 if __name__ == '__main__':
     main()
