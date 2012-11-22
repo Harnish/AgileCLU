@@ -2,9 +2,10 @@
 
 from AgileCLU import AgileCLU
 from optparse import OptionParser, OptionGroup
-import sys, os.path, urllib, subprocess, time
-import gzip
+import sys, os.path, urllib, subprocess, time, gzip, random, struct, io, json
+from Crypto.Cipher import AES
 
+mykey = 'EncryptionKey'
 from poster.encode import multipart_encode, get_body_size
 from poster.streaminghttp import register_openers
 from urllib2 import Request, urlopen, URLError, HTTPError
@@ -25,7 +26,8 @@ def main(*arg):
 	group.add_option("-e", "--egress", dest="egress", help="set egress policy (PARTIAL, COMPLETE or POLICY)", default="COMPLETE")
 	group.add_option("-m", "--mkdir", action="store_true", help="create destination path, if it does not exist")
 	group.add_option("-p", "--progress", action="store_true", help="show transfer progress bar")
-	group.add_option("-z", "--zip", action="store_true", help="compress file before uploading.  Store encrypted")
+	group.add_option("-z", "--zip", action="store_true", help="compress file before uploading. Including encrypted")
+	group.add_option("-s", "--encrypt", action="store_true", help="Encrypt file before sending it up")
 	parser.add_option_group(group)
 	
 	config = OptionGroup(parser, "Configuration Option")
@@ -50,6 +52,11 @@ def main(*arg):
 
 	localpath = os.path.dirname(object)
 	localfile = os.path.basename(object)
+
+	if( options.encrypt ):
+		encrypt_file(mykey, os.path.join(localpath,localfile))
+		localfile += ".enc"
+
 	if( options.zip ):
 		if options.verbose: print "Compressing %s" % (localfile)
 		f_in = open(os.path.join(localpath,localfile), 'rb')
@@ -95,6 +102,51 @@ def main(*arg):
 	if( options.zip ):
 		if options.verbose: print "Clearing cached zip file"
 		os.remove(os.path.join(localpath,localfile))
+
+
+def encrypt_file(key, in_filename, out_filename=None, chunksize=64*1024):
+    """ Encrypts a file using AES (CBC mode) with the
+        given key.
+
+        key:
+            The encryption key - a string that must be
+            either 16, 24 or 32 bytes long. Longer keys
+            are more secure.
+
+        in_filename:
+            Name of the input file
+
+        out_filename:
+            If None, '<in_filename>.enc' will be used.
+
+        chunksize:
+            Sets the size of the chunk which the function
+            uses to read and encrypt the file. Larger chunk
+            sizes can be faster for some files and machines.
+            chunksize must be divisible by 16.
+    """
+    if not out_filename:
+        out_filename = in_filename + '.enc'
+
+    iv = ''.join(chr(random.randint(0, 0xFF)) for i in range(16))
+    encryptor = AES.new(key, AES.MODE_CBC, iv)
+    filesize = os.path.getsize(in_filename)
+
+    with open(in_filename, 'rb') as infile:
+        with open(out_filename, 'wb') as outfile:
+            outfile.write(struct.pack('<Q', filesize))
+            outfile.write(iv)
+
+            while True:
+                chunk = infile.read(chunksize)
+                if len(chunk) == 0:
+                    break
+                elif len(chunk) % 16 != 0:
+                    chunk += ' ' * (16 - len(chunk) % 16)
+
+                outfile.write(encryptor.encrypt(chunk))
+
+
 
 if __name__ == '__main__':
     main()

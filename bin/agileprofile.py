@@ -54,7 +54,7 @@ def	edit_profile( profile, command ):
 		if os.path.isfile( os.path.join( config_path, profile+'.conf' ) ):
 			print "Profile (%s) already exists.  You must use delete first, or use modify.  Exiting." % (profile)
 			sys.exit(1)
-		username='' ; password='' 
+		username='' ; password='';encryptionkey=''; 
 		egress_protocol='http' ; egress_port='80' ; egress_hostname='global.mt.lldns.net' ; egress_basepath='' ; 
 		ingest_protocol='https' ; ingest_port='443' ; ingest_hostname='api.agile.lldns.net' 
 
@@ -65,7 +65,7 @@ def	edit_profile( profile, command ):
 			cfgver=config.get("AgileCLU", "version" )
 			username=config.get( "Identity", "username" )
 			password=config.get( "Identity", "password" )
-
+			encryptionpassword=config.get( "Identity", "encryptionpassword")
 			egress_protocol=config.get( "Egress", "protocol" )
 			egress_hostname=config.get( "Egress", "hostname" )
 			egress_port=config.get( "Egress", "port" )
@@ -144,6 +144,8 @@ def	edit_profile( profile, command ):
 			cipher = AgileCLU.e_pw_hash( password, username, egress_protocol, egress_hostname, egress_basepath )
 		else:	
 			cipher = password
+
+                encryptionpassword = prompt( 'Encryption Password', encryptionpassword, command )
 
 	except (KeyboardInterrupt, SystemExit):
 		print "\nAborting..."
