@@ -78,6 +78,7 @@ class	AgileCLU:
 		self.pbarfname = None
 
 		upw = e_pw_dehash( cfg.get("Identity", "password"), self.uid, self.egress_protocol, self.egress_hostname, self.egress_basepath )
+		self.encryptionpassword = e_pw_dehash( cfg.get("Identity", "encriptionpassword"), self.uid, self.egress_protocol, self.egress_hostname, self.egress_basepath )
 
 		if upw is "87654321":
 			print "Password corruptions - dehash was empty!  Delete the profile and create a new one."
@@ -104,6 +105,10 @@ class	AgileCLU:
 	def	apiurlstr(self):
 		logger.info( self.uid+" "+self.token+", apiurl="+self.apiurl )
 		return self.apiurl
+
+	def	encryptionpasswordstr(self):
+		logger.info( self.uid+" "+self.token+", encryptionpasswordstr="+self.encryptionpassword )
+		return self.encryptionpassword
 
 	def	posturlstr(self):
 		logger.info( self.uid+" "+self.token+", posturl="+self.posturl )
