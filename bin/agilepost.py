@@ -5,7 +5,6 @@ from optparse import OptionParser, OptionGroup
 import sys, os.path, urllib, subprocess, time, gzip, random, struct, io, json
 from Crypto.Cipher import AES
 
-mykey = 'EncryptionKey'
 from poster.encode import multipart_encode, get_body_size
 from poster.streaminghttp import register_openers
 from urllib2 import Request, urlopen, URLError, HTTPError
@@ -54,7 +53,7 @@ def main(*arg):
 	localfile = os.path.basename(object)
 
 	if( options.encrypt ):
-		encrypt_file(mykey, os.path.join(localpath,localfile))
+		encrypt_file(agile.encryptionpassword, os.path.join(localpath,localfile))
 		localfile += ".enc"
 
 	if( options.zip ):

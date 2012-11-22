@@ -37,7 +37,6 @@ def decrypt_file(key, in_filename, out_filename=None, chunksize=24*1024):
 def main(*arg):
     agile = AgileCLU()
     egress=agile.mapperurl
-    mykey = 'EncryptionKey'
     lfile = args[0]
     dpath = args[1]
     lfilename = os.path.split(lfile)[1]
@@ -48,7 +47,7 @@ def main(*arg):
     f.close()
     filename, fileext = os.path.splitext(dfile)
     if(fileext == 'enc'):
-         decrypt_file(mykey, dfile)
+         decrypt_file(agile.encryptionpassword, dfile)
 
 if __name__ == '__main__':
     main()
