@@ -27,12 +27,12 @@ def main(*arg):
 	group.add_option("-d", "--dirhide", action="store_true", help="hide directory objects")
 	parser.add_option_group(group)
 
-	""" Placeholder for using command line for profile information 
+	""" Placeholder for using command line for profile information
 	profile = OptionGroup(parser, "Profile options")
 	profile.add_option("--username", dest="username", help="Agile username")
 	profile.add_option("--password", dest="password", help="Agile password")
 	profile.add_option("--iprotocol", dest="ingest_protocol", help="Agile ingest protocol", default="https")
-	profile.add_option("--ihostname", dest="ingest_hostname", help="Agile ingest hostname", default="api.agile.lldns.net")
+	profile.add_option("--ihostname", dest="ingest_hostname", help="Agile ingest hostname", default="labs-l.upload.llnw.net")
 	profile.add_option("--eprotocol", dest="egress_protocol", help="Agile egress protocol", default="http")
 	profile.add_option("--ehostname", dest="egress_hostname", help="Agile egress hostname", default="global.mt.lldns.net")
 	profile.add_option("--ebase", dest="egress_basepath", help="Agile egress base path" )
@@ -41,9 +41,9 @@ def main(*arg):
 
 	(options, args) = parser.parse_args()
 	if len(args) != 1 and len(args) != 0: parser.error("Wrong number of arguments. Exiting.")
-	if len(args) == 0: 
+	if len(args) == 0:
 		path = '/'
-	else: 
+	else:
 		path = args[0]
 
 	if options.username: agile = AgileCLU( options.username )
@@ -74,18 +74,18 @@ def main(*arg):
 			items = sorted( items, key=itemgetter('name'))
 			items = sorted( items, key=lambda x: x['name'].lower())
 	                for item in items:
-	                        if options.url: 
+	                        if options.url:
 					itemurl = "%s%s" % (agile.mapperurlstr(),  urllib.quote(os.path.join( object, item['name'] )))
-	                        else: 
+	                        else:
 					itemurl = os.path.join(object,item['name'])
-	                        if options.bytes: 
+	                        if options.bytes:
 	                                if options.sizes: itemurl += " "+sizeof_fmt(item['stat']['size'])
 	                                else: itemurl += " "+str(item['stat']['size'])+" bytes"
 	                        print itemurl
 
-		if options.recurse: 
+		if options.recurse:
 			DirWalker().walk(path,FileWalker)
-		else: 
+		else:
                         dir = agile.listDir( path,  1000, 0, 1 )
 			dir['list'] = sorted(dir['list'], key=str)
                         for item in dir['list']:

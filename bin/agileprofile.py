@@ -10,9 +10,9 @@ config = ConfigParser.SafeConfigParser()
 
 def	delete_profile( profile ):
 	if not os.path.isfile( os.path.join( config_path, profile+'.conf' ) ):
-		print "The (%s) profile does not exist.  Exiting." % ( profile ) 
+		print "The (%s) profile does not exist.  Exiting." % ( profile )
 	else:
-		try: 
+		try:
 			os.unlink( os.path.join( config_path, profile+'.conf' ) )
 		except:
 			print "Failed to remove (%s) profile.  Exiting." % (profile)
@@ -21,7 +21,7 @@ def	delete_profile( profile ):
 
 def	view_profile( profile ):
 	if not os.path.isfile( os.path.join( config_path, profile+'.conf' ) ):
-		print "The (%s) profile does not exist.  Exiting." % ( profile ) 
+		print "The (%s) profile does not exist.  Exiting." % ( profile )
 	else:
 		with open ( os.path.join( config_path, profile+'.conf' ), 'r' ) as f:
 			read_data = f.read()
@@ -32,7 +32,7 @@ def	prompt( str, default, command, password=False ):
 	#if command=='modify':
 	if default<>'' and not password:
 		str += ' [%s]' % default
-	
+
 	if password:
 		str += ' '
 		value = getpass.getpass(' '+str.rjust(width)+': ')
@@ -54,12 +54,12 @@ def	edit_profile( profile, command ):
 		if os.path.isfile( os.path.join( config_path, profile+'.conf' ) ):
 			print "Profile (%s) already exists.  You must use delete first, or use modify.  Exiting." % (profile)
 			sys.exit(1)
-		username='' ; password='';encryptionpassword=''; 
-		egress_protocol='http' ; egress_port='80' ; egress_hostname='global.mt.lldns.net' ; egress_basepath='' ; 
-		ingest_protocol='https' ; ingest_port='443' ; ingest_hostname='api.agile.lldns.net' 
+		username='' ; password='';encryptionpassword='';
+		egress_protocol='http' ; egress_port='80' ; egress_hostname='global.mt.lldns.net' ; egress_basepath='' ;
+		ingest_protocol='https' ; ingest_port='443' ; ingest_hostname='labs-l.upload.llnw.net'
 
 	elif command=='modify':
-		config.read( os.path.join( config_path, profile+'.conf' ) ) 
+		config.read( os.path.join( config_path, profile+'.conf' ) )
 
 		try:
 			cfgver=config.get("AgileCLU", "version" )
@@ -81,7 +81,7 @@ def	edit_profile( profile, command ):
 	ciphered = 0
 	print command.upper()+ " PROFILE: "+profile
 	try:
-		ok=0 
+		ok=0
 		while not ok:
 			username = prompt( 'Username', username, command )
 			ok = len(username)>=2
@@ -104,7 +104,7 @@ def	edit_profile( profile, command ):
 		egress_port = "80"
 		egress_protocol = 'http'
 		""" Temporarily leave off https, since MTs are not presently configured for https, default http will be used
-		ok=0 
+		ok=0
 		while not ok:
 			egress_protocol = prompt( 'Egress protocol', egress_protocol, command ).lower()
 			ok = egress_protocol in ['http','https']
@@ -142,7 +142,7 @@ def	edit_profile( profile, command ):
 
 		if not ciphered:
 			cipher = AgileCLU.e_pw_hash( password, username, egress_protocol, egress_hostname, egress_basepath )
-		else:	
+		else:
 			cipher = password
 
                 encryptionpassword = prompt( 'Encryption Password', encryptionpassword, command )
@@ -151,7 +151,7 @@ def	edit_profile( profile, command ):
 	except (KeyboardInterrupt, SystemExit):
 		print "\nAborting..."
 		sys.exit(1)
-	
+
 	if command=='modify':
 		try:
 			os.unlink( os.path.join( config_path, profile+'.conf' ) )
@@ -184,7 +184,7 @@ def	edit_profile( profile, command ):
 	config.set("Ingest", "port", ingest_port )
 	config.set("Ingest", "protocol", ingest_protocol )
 	config.set("Ingest", "hostname", ingest_hostname )
-	
+
 	config.add_section("Logging")
 	config.set("Logging", "enabled", "no" )
 	config.set("Logging", "logfile", "/var/log/agileclu.log" )
@@ -197,7 +197,7 @@ def	edit_profile( profile, command ):
 		print "updated.",
 	else:
 		print "saved.",
-	print " Exiting.\n" 
+	print " Exiting.\n"
 
 def	list_profile():
 
@@ -210,7 +210,7 @@ def	list_profile():
 
 def	main(*arg):
 
-	parser = OptionParser( 
+	parser = OptionParser(
 		usage= "usage: %prog create|delete|modify|list [profile]",
 		version="%prog (AgileCLU "+AgileCLU.AgileCLU.__version__+")")
 
@@ -220,13 +220,13 @@ def	main(*arg):
 	if len(args) < 1 or len(args) > 2: parser.error("Wrong number of arguments. Use -h for more information.")
 
 	command = args[0].lower()
-	if len(args)==2: 
+	if len(args)==2:
 		profile = args[1].lower()
 	else:
 		profile = 'default'
 
 	if not os.path.isdir( config_path):
-		try: 
+		try:
 			os.mkdir( config_path, 0700 )
 		except OSError:
 			print "Failed to create profile directory (%s).  Please check permissions." % (config_path)

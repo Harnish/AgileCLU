@@ -57,7 +57,7 @@ Example output:
 	             Egress hostname [global.mt.lldns.net] : 
 	                                  Egress base path : /testcompany
 	                           Ingest protocol [https] : 
-	                                   Ingest hostname : test-company.api.agile.lldns.net
+	                                   Ingest hostname : test-company.upload.llnw.net
 	
 	Profile (test) has been saved.  Exiting.
 
