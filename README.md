@@ -1,3 +1,5 @@
+APIs and Company are no longer available.  Left for research only.
+
 # AgileCLU #
 
 AgileCLU is a command line implementation of Limelight Networks Agile Storage cloud platform.  It is also a Python library to simplify integrating Python applications with cloud object storage.
